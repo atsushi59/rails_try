@@ -1,0 +1,8 @@
+ja:
+  users:
+    form:
+      user_name: ユーザー名
+      email: メール
+      password: パスワード
+      password_digest : パスワード確認
+      submit: "送信する"

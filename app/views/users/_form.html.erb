@@ -1,0 +1,27 @@
+
+
+<%= form_with(model: @user, local: true) do |form| %>
+  <div class="mb-3">
+    <%= form.label :user_name, t('.user_name'), class: "form-label" %>
+    <%= form.text_field :user_name, class: "form-control", id: "formGroupExampleInput" %>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :email, t('.email'), class: "form-label" %>
+    <%= form.email_field :email, class: "form-control", id: "emailInput" %>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :password, t('.password'), class: "form-label" %>
+    <%= form.password_field :password, class: "form-control", id: "passwordInput" %>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :password_digest, t('.password_digest'), class: "form-label" %>
+    <%= form.password_field :password_digest, class: "form-control", id: "passwordDigestInput"%>
+  </div>
+
+  <div class="mb-3">
+    <%= form.submit t('.submit'), class: "btn btn-primary" %>
+  </div>
+<% end %>  
