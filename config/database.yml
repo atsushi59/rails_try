@@ -1,23 +1,36 @@
-# PostgreSQL. Versions 9.3 and up are supported.
-
 default: &default
   adapter: postgresql
   encoding: unicode
+  # For details on connection pooling, see Rails configuration guide
+  # https://guides.rubyonrails.org/configuring.html#database-pooling
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  host: <%= ENV["RENDER_DB_HOSTNAME"] %>
+  username: root
+  password: <%= ENV["RENDER_DB_PASSWORD"] %>
+
+development:
+  adapter: postgresql
+  encoding: unicode
+  # For details on connection pooling, see Rails configuration guide
+  # https://guides.rubyonrails.org/configuring.html#database-pooling
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   host: db
   username: root
   password: password
-
-development:
-  <<: *default
   database: my_app_development
 
 test:
   <<: *default
   database: my_app_test
-
+#
+#   production:
+#     url: <%= ENV["MY_APP_DATABASE_URL"] %>
+#
+# Read https://guides.rubyonrails.org/configuring.html#configuring-a-database
+# for a full overview on how database connection configuration can be specified.
+#
 production:
   <<: *default
-  database: my_app_production
-  username: my_app
-  password: <%= ENV["MY_APP_DATABASE_PASSWORD"] %>
+  database: app_development_oib4
+  username: root
+  password: <%= ENV["RENDER_DB_PASSWORD"] %>
