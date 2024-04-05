@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>掲示板</title>
+</head>
+<body>
+    <h1 class="text-3xl font-bold underline">Hello world!</h1>
+    <div><br><br><br>
+        <%= form_with url: root_path, method: :get, local: true do |form| %>
+            <%= form.text_field :query %>
+            <%= form.submit "検索" %>
+        <% end %>
+
+        <!-- Rails ERB テンプレート -->
+        <% if @place_details %>
+            <h1><%= @place_details['name'] %></h1>
+            <p><%= @place_details['formatted_address'] %></p>
+
+            <% if @place_details['opening_hours'] %>
+                <p>営業時間:</p>
+                <ul>
+                    <% @place_details['opening_hours']['weekday_text'].each do |line| %>
+                        <li><%= line %></li>
+                    <% end %>
+                </ul>
+            <% end %>
+
+            <% if @place_details['website'] %>
+                <p>Website: <%= link_to @place_details['website'], @place_details['website'] %></p>
+            <% end %>
+
+            <% if @photo_url %>
+                <img src="<%= @photo_url %>" alt="Place photo">
+            <% end %>
+        <% else %>
+            <p>場所の情報は見つかりませんでした。</p>
+        <% end %>
+    </div>
+</body>
+</html>
