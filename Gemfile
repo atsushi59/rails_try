@@ -9,6 +9,8 @@ gem 'bcrypt'
 gem 'bootstrap'
 gem 'bootstrap-sass'
 gem 'sass-rails'
+gem 'dotenv-rails'
+gem 'httparty'
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem "sprockets-rails"
 
@@ -71,3 +73,5 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
+
+gem "tailwindcss-rails", "~> 2.3"

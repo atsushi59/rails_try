@@ -15,7 +15,7 @@ services:
       context: .
       dockerfile: Dockerfile
     command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 3000 -b '0.0.0.0'"
-    container_name: my_app_web
+    container_name: rails_try_web
     volumes:
       - .:/app
       - bundle_data:/usr/local/bundle:cached
