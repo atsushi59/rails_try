@@ -1,95 +1,92 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>掲示板</title>
-</head>
-<body>
-    <h1 class="text-3xl font-bold underline">Hello world!</h1>
 
-    <div>
-        <%= form_with url: root_path, method: :get, local: true do |form| %>
-            <%= form.text_field :query %>
-            <%= form.submit "検索" %>
+<h1 class="text-3xl font-bold underline">Hello world!</h1>
+
+<div>
+    <%= form_with url: root_path, method: :get, local: true do |form| %>
+        <%= form.text_field :query %>
+        <%= form.submit "検索" %>
+    <% end %>
+</div>
+
+<div>
+    <% if @place_details %>
+        <h1><%= @place_details['name'] %></h1>
+        <p><%= @place_details['formatted_address'] %></p>
+
+        <% if @place_details['opening_hours'] %>
+            <p>営業時間:</p>
+            <ul>
+                <% @place_details['opening_hours']['weekday_text'].each do |line| %>
+                    <li><%= line %></li>
+                <% end %>
+            </ul>
         <% end %>
+
+        <% if @place_details['website'] %>
+            <p>Website: <%= link_to @place_details['website'], @place_details['website'] %></p>
+        <% end %>
+
+        <% if @photo_url %>
+            <img src="<%= @photo_url %>" alt="Place photo">
+        <% end %>
+    <% else %>
+        <p>場所の情報は見つかりませんでした。</p>
+    <% end %>
+</div>
+
+<%= form_with url: search_path, method: :post, id: 'location_form' do |form| %>
+    <div>
+        <%= form.label :selected_transport, '交通手段' %>
+        <%= form.select :selected_transport, [['車', '車'], ['電車', '電車']] %>
     </div>
 
     <div>
-        <% if @place_details %>
-            <h1><%= @place_details['name'] %></h1>
-            <p><%= @place_details['formatted_address'] %></p>
-
-            <% if @place_details['opening_hours'] %>
-                <p>営業時間:</p>
-                <ul>
-                    <% @place_details['opening_hours']['weekday_text'].each do |line| %>
-                        <li><%= line %></li>
-                    <% end %>
-                </ul>
-            <% end %>
-
-            <% if @place_details['website'] %>
-                <p>Website: <%= link_to @place_details['website'], @place_details['website'] %></p>
-            <% end %>
-
-            <% if @photo_url %>
-                <img src="<%= @photo_url %>" alt="Place photo">
-            <% end %>
-        <% else %>
-            <p>場所の情報は見つかりませんでした。</p>
-        <% end %>
+        <%= form.label :selected_time, '所要時間' %>
+        <%= form.select :selected_time, [['30分', '30分'], ['1時間', '1時間'], ['1時間30分', '1時間30分'], ['2時間', '2時間']] %>
     </div>
 
     <div>
-        <%= form_with url: search_path, method: :post do |form| %>
-            <div>
-                <%= form.label :selected_transport, '交通手段' %>
-                <%= form.select :selected_transport, [['車', '車'], ['電車', '電車']] %>
-            </div>
-
-            <div>
-                <%= form.label :selected_time, '所要時間' %>
-                <%= form.select :selected_time, [['30分', '30分'], ['1時間', '1時間'], ['1時間30分', '1時間30分'], ['2時間', '2時間']] %>
-            </div>
-
-            <div>
-                <%= form.label :selected_age, '子供の年齢' %>
-                <%= form.select :selected_age, [['0歳', '0'], ['1歳', '1'], ['2歳', '2'], ['3歳', '3'], ['4歳', '4'], ['5歳', '5'], ['6歳', '6'], ['7歳以上', '7歳以上']] %>
-            </div>
-
-            <div>
-                <%= form.label :selected_activity, '活動タイプ' %>
-                <%= form.select :selected_activity, [['外遊び場', '外遊び場'], ['室内遊び場', '室内遊び場'], ['テーマパーク', 'テーマパーク'], ['体験施設', '体験施設']] %>
-            </div>
-
-            <div>
-                <%= form.submit '検索' %>
-            </div>
-        <% end %>
+        <%= form.label :selected_age, '子供の年齢' %>
+        <%= form.select :selected_age, [['0歳', '0'], ['1歳', '1'], ['2歳', '2'], ['3歳', '3'], ['4歳', '4'], ['5歳', '5'], ['6歳', '6'], ['7歳以上', '7歳以上']] %>
     </div>
 
-    <div id="address"><h2>現在地情報:</h2></div>
+    <div>
+        <%= form.label :selected_activity, '活動タイプ' %>
+        <%= form.select :selected_activity, [['外遊び場', '外遊び場'], ['室内遊び場', '室内遊び場'], ['テーマパーク', 'テーマパーク'], ['体験施設', '体験施設']] %>
+    </div>
 
-    <script>
+    <div>
+        <%= form.hidden_field :address, id: 'hidden_address' %>
+        <%= form.submit '検索' %>
+    </div>
+<% end %>
+
+<div id="current_address"><h2>現在地情報:</h2></div>
+
+<script>
     function showPosition(position) {
         var lat = position.coords.latitude;
         var lng = position.coords.longitude;
-        console.log(lat, lng);
 
         var geocoder = new google.maps.Geocoder;
         var latlng = {lat: parseFloat(lat), lng: parseFloat(lng)};
-    
+
         geocoder.geocode({'location': latlng}, function(results, status) {
-            if (status === 'OK') {
-                if (results[0]) {
-                    console.log(results[0].formatted_address);
-                    document.getElementById('address').textContent = results[0].formatted_address;
-                } else {
-                    window.alert('No results found');
-                }
+            if (status === 'OK' && results[0]) {
+                var fullAddress = results[0].formatted_address;
+                console.log(fullAddress);
+
+                // 住所から国名と郵便番号を削除
+                var address = fullAddress.replace(/日本、〒\d{3}-\d{4} /, '');
+                console.log(address);
+
+                // 住所を隠しフィールドに設定
+                document.getElementById('hidden_address').value = address;
+
+                // フォームをサブミット
+                document.getElementById('location_form').submit();
             } else {
-                window.alert('Geocoder failed due to: ' + status);
+                window.alert('No results found or Geocoder failed due to: ' + status);
             }
         });
     }
@@ -99,6 +96,4 @@
     } else {
         console.log("Geolocation is not available.");
     }
-    </script>
-</body>
-</html>
+</script>
