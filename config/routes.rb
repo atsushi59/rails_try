@@ -6,4 +6,7 @@ Rails.application.routes.draw do
   resources :users
   resources :tasks
   get '/styles.css', to: 'static#styles'
+  post 'some_action', to: 'some#some_action'
+  post 'search', to: 'some#search'
+
 end

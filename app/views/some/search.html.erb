@@ -1,0 +1,14 @@
+<h1>検索結果</h1>
+
+<% if @error_message %>
+  <p>エラー: <%= @error_message %></p>
+<% else %>
+  <% if @answer %>
+    <div>
+      <p>検索結果:</p>
+      <%= @answer %>
+    </div>
+  <% else %>
+    <p>結果が見つかりませんでした。</p>
+  <% end %>
+<% end %>
