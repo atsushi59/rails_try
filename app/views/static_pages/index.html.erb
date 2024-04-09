@@ -7,13 +7,15 @@
 </head>
 <body>
     <h1 class="text-3xl font-bold underline">Hello world!</h1>
-    <div><br><br><br>
+
+    <div>
         <%= form_with url: root_path, method: :get, local: true do |form| %>
             <%= form.text_field :query %>
             <%= form.submit "検索" %>
         <% end %>
+    </div>
 
-        <!-- Rails ERB テンプレート -->
+    <div>
         <% if @place_details %>
             <h1><%= @place_details['name'] %></h1>
             <p><%= @place_details['formatted_address'] %></p>
@@ -39,53 +41,64 @@
         <% end %>
     </div>
 
-    <%= form_with url: search_path, method: :post do |form| %>
-        <div>
-            <%= form.label :selected_transport, '交通手段' %>
-            <%= form.select :selected_transport, [['車', '車'], ['電車', '電車']] %>
-        </div>
+    <div>
+        <%= form_with url: search_path, method: :post do |form| %>
+            <div>
+                <%= form.label :selected_transport, '交通手段' %>
+                <%= form.select :selected_transport, [['車', '車'], ['電車', '電車']] %>
+            </div>
 
-        <div>
-            <%= form.label :selected_time, '所要時間' %>
-            <%= form.select :selected_time, [['30分', '30分'], ['1時間', '1時間'], ['1時間30分', '1時間30分'], ['2時間', '2時間']] %>
-        </div>
+            <div>
+                <%= form.label :selected_time, '所要時間' %>
+                <%= form.select :selected_time, [['30分', '30分'], ['1時間', '1時間'], ['1時間30分', '1時間30分'], ['2時間', '2時間']] %>
+            </div>
 
-        <div>
-            <%= form.label :selected_age, '子供の年齢' %>
-            <%= form.select :selected_age, [['0歳', '0'], ['1歳', '1'], ['2歳', '2'], ['3歳', '3'], ['4歳', '4'], ['5歳', '5'], ['6歳', '6'], ['7歳以上', '7歳以上']] %>
-        </div>
+            <div>
+                <%= form.label :selected_age, '子供の年齢' %>
+                <%= form.select :selected_age, [['0歳', '0'], ['1歳', '1'], ['2歳', '2'], ['3歳', '3'], ['4歳', '4'], ['5歳', '5'], ['6歳', '6'], ['7歳以上', '7歳以上']] %>
+            </div>
 
-        <div>
-            <%= form.label :selected_activity, '活動タイプ' %>
-            <%= form.select :selected_activity, [['外遊び場', '外遊び場'], ['室内遊び場', '室内遊び場'], ['テーマパーク', 'テーマパーク'], ['体験施設', '体験施設']] %>
-        </div>
+            <div>
+                <%= form.label :selected_activity, '活動タイプ' %>
+                <%= form.select :selected_activity, [['外遊び場', '外遊び場'], ['室内遊び場', '室内遊び場'], ['テーマパーク', 'テーマパーク'], ['体験施設', '体験施設']] %>
+            </div>
 
-        <div>
-            <%= form.submit '検索' %>
-        </div>
-    <% end %>
+            <div>
+                <%= form.submit '検索' %>
+            </div>
+        <% end %>
+    </div>
 
-    <% if @current_location %>
-        <div>
-            <h2>現在地情報:</h2>
-            <p>住所: <%= @current_location.address %></p>
-            <p>緯度: <%= @current_location.latitude %></p>
-            <p>経度: <%= @current_location.longitude %></p>
-        </div>
-    <% else %>
-        <p>現在地情報を取得できませんでした。</p>
-    <% end %>
+    <div id="address"><h2>現在地情報:</h2></div>
 
     <script>
-        if ("geolocation" in navigator) {
-        navigator.geolocation.getCurrentPosition(function(position) {
-            console.log(position.coords.latitude, position.coords.longitude);
+    function showPosition(position) {
+        var lat = position.coords.latitude;
+        var lng = position.coords.longitude;
+        console.log(lat, lng);
+
+        var geocoder = new google.maps.Geocoder;
+        var latlng = {lat: parseFloat(lat), lng: parseFloat(lng)};
+    
+        geocoder.geocode({'location': latlng}, function(results, status) {
+            if (status === 'OK') {
+                if (results[0]) {
+                    console.log(results[0].formatted_address);
+                    document.getElementById('address').textContent = results[0].formatted_address;
+                } else {
+                    window.alert('No results found');
+                }
+            } else {
+                window.alert('Geocoder failed due to: ' + status);
+            }
         });
-        } else {
+    }
+
+    if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(showPosition);
+    } else {
         console.log("Geolocation is not available.");
-        }
+    }
     </script>
-
-
 </body>
 </html>
