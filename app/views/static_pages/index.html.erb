@@ -38,5 +38,45 @@
             <p>場所の情報は見つかりませんでした。</p>
         <% end %>
     </div>
+
+    <%= form_with url: search_path, method: :post do |form| %>
+        <div>
+            <%= form.label :selected_transport, '交通手段' %>
+            <%= form.select :selected_transport, [['車', '車'], ['電車', '電車']] %>
+        </div>
+
+        <div>
+            <%= form.label :selected_time, '所要時間' %>
+            <%= form.select :selected_time, [['30分', '30分'], ['1時間', '1時間'], ['1時間30分', '1時間30分'], ['2時間', '2時間']] %>
+        </div>
+
+        <div>
+            <%= form.label :selected_age, '子供の年齢' %>
+            <%= form.select :selected_age, [['0歳', '0'], ['1歳', '1'], ['2歳', '2'], ['3歳', '3'], ['4歳', '4'], ['5歳', '5'], ['6歳', '6'], ['7歳以上', '7歳以上']] %>
+        </div>
+
+        <div>
+            <%= form.label :selected_activity, '活動タイプ' %>
+            <%= form.select :selected_activity, [['外遊び場', '外遊び場'], ['室内遊び場', '室内遊び場'], ['テーマパーク', 'テーマパーク'], ['体験施設', '体験施設']] %>
+        </div>
+
+        <div>
+            <%= form.submit '検索' %>
+        </div>
+    <% end %>
+
+    <% if @current_location %>
+        <div>
+            <h2>現在地情報:</h2>
+            <p>住所: <%= @current_location.address %></p>
+            <p>緯度: <%= @current_location.latitude %></p>
+            <p>経度: <%= @current_location.longitude %></p>
+        </div>
+    <% else %>
+        <p>現在地情報を取得できませんでした。</p>
+    <% end %>
+
+
+
 </body>
 </html>

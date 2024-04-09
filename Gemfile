@@ -11,6 +11,7 @@ gem 'bootstrap-sass'
 gem 'sass-rails'
 gem 'dotenv-rails'
 gem 'httparty'
+gem 'geocoder'
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem "sprockets-rails"
 
