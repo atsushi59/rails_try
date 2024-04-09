@@ -1,4 +1,4 @@
-require 'httparty'
+require 'HTTParty'
 
 class ChatgptService
   include HTTParty
