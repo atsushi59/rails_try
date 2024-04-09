@@ -1,6 +1,5 @@
 class StaticPagesController < ApplicationController
   def index
-    @current_location = Geocoder.search(request.remote_ip).first
     api_key = ENV['GOOGLE_API_KEY'] #環境変数からGoogle Places APIキーを取得
     google_places_service = GooglePlacesService.new(api_key) #GooglePlacesServiceクラスのインスタンスを作成し、APIキーを渡す
 
