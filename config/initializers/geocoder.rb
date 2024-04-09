@@ -1,4 +1,4 @@
-require 'HTTParty'
+require 'httparty'
 
 Geocoder.configure(
   lookup: :google,
