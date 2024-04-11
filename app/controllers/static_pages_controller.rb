@@ -15,6 +15,19 @@ class StaticPagesController < ApplicationController
       @place_details = details_response.parsed_response['result']
       #google_places_service.get_place_details(place_id): place_idを使用して場所の詳細を取得し取得した場所の詳細を@place_detailsに格納
 
+      # 営業時間情報の取得
+      if @place_details['opening_hours']
+        #@place_details に opening_hours キーが存在するかどうかをチェック
+        day_of_week = Time.zone.today.wday
+        #現在の曜日のインデックスを取得
+        day_of_week = day_of_week.zero? ? 6 : day_of_week - 1 
+        # 日曜始まりに調整
+        @today_opening_hours = @place_details['opening_hours']['weekday_text'][day_of_week]
+        #調整されたインデックスを使用して、weekday_text 配列から本日の営業時間を取得し、それを @today_opening_hours に格納
+      else
+        @today_opening_hours = "営業時間の情報はありません。"
+      end
+
       if @place_details['photos']
         photo_reference = @place_details['photos'].first['photo_reference']
         @photo_url = google_places_service.get_photo(photo_reference)
