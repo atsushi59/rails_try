@@ -57,6 +57,7 @@
 
     <div>
         <%= form.hidden_field :address, id: 'hidden_address' %>
+        <%# 隠しフィールド 画面上では表示されないが検索ボタンを押したタイミングでhidden_addressを取得（現在地）%>
         <%= form.submit '検索' %>
     </div>
 <% end %>
@@ -66,37 +67,48 @@
     function showPosition(position) {
         var lat = position.coords.latitude;
         var lng = position.coords.longitude;
+        //緯度経度の取得
 
         var geocoder = new google.maps.Geocoder;
+        //Google Maps Geocoding APIを使用するためにインスタンス化
         var latlng = {lat: parseFloat(lat), lng: parseFloat(lng)};
+        //緯度経度の値をオブジェクトに格納
 
         geocoder.geocode({'location': latlng}, function(results, status) {
+        //↑を呼び出して取得した緯度経度から住所を検索　latlng は、取得した緯度と経度を含むオブジェクト
             if (status === 'OK' && results[0]) {
                 var fullAddress = results[0].formatted_address;
                 console.log(fullAddress);
+                //住所が存在した場合完全な住所情報を取得
 
-                // 住所から国名と郵便番号を削除
                 var address = fullAddress.replace(/日本、〒\d{3}-\d{4} /, '');
                 console.log(address);
+                // 住所から国名と郵便番号を削除
 
-                // 住所を隠しフィールドに設定
+                
                 document.getElementById('hidden_address').value = address;
-
-                // フォームをサブミット
+                // 住所を隠しフィールドに設定
+                
                 document.getElementById('location_form').submit();
             } else {
                 window.alert('No results found or Geocoder failed due to: ' + status);
             }
+                // APIの呼び出しに失敗した場合alert
         });
     }
 
     document.getElementById('location_form').addEventListener('submit', function(event) {
+        //フォームが送信された時に実行される関数を追加
         if (!document.getElementById('hidden_address').value) {
-            event.preventDefault(); // 位置情報が設定されていない場合はフォームの送信を防止
+            event.preventDefault(); 
+            //hidden_address というIDを持つHTML要素の値をチェック
             if ("geolocation" in navigator) {
+            // 位置情報が設定されていない場合はフォームの送信を防止
                 navigator.geolocation.getCurrentPosition(showPosition);
+            //Geolocation APIを使用して、ユーザーの現在の位置情報を取得し現在位置のデータが渡される
             } else {
-                console.log("Geolocation is not available.");
+                console.log("ジオロケーションは利用できません");
+            //ブラウザがGeolocation APIをサポートしていない場合、コンソールにメッセージを出力
             }
         }
     });

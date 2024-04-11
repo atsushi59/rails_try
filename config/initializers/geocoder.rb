@@ -1,7 +1,7 @@
 require 'httparty'
 
 Geocoder.configure(
-  lookup: :google,
+  lookup: :google, #ジオコーディングサービスとしてGoogleを使用
   api_key: ENV['GOOGLE_API_KEY'],
-  use_https: true
+  use_https: true #HTTPSプロトコルを使用してリクエストを送信
 )

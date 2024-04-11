@@ -1,5 +1,59 @@
-<h1>タスク一覧</h1>
+<script>
+  window.onload = function() {
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(showPosition, showError);
+    } else {
+      console.log("Geolocation is not available.");
+    }
+  };
 
-<dl>
-  <%= render @tasks %>
-</dl>
+  function showPosition(position) {
+    var lat = position.coords.latitude;
+    var lng = position.coords.longitude;
+    // 緯度経度の取得
+
+    var geocoder = new google.maps.Geocoder();
+    // Google Maps Geocoding APIを使用するためにインスタンス化
+    var latlng = {lat: parseFloat(lat), lng: parseFloat(lng)};
+    // 緯度経度の値をオブジェクトに格納
+
+    geocoder.geocode({'location': latlng}, function(results, status) {
+      // ↑を呼び出して取得した緯度経度から住所を検索　latlngは、取得した緯度と経度を含むオブジェクト
+      if (status === 'OK' && results[0]) {
+        var fullAddress = results[0].formatted_address;
+        console.log(fullAddress);
+        // 住所が存在した場合完全な住所情報を取得し、コンソールに表示
+
+        var address = fullAddress.replace(/日本、〒\d{3}-\d{4} /, '');
+        console.log(address);
+        // 住所から国名と郵便番号を削除し、コンソールに表示
+
+        document.getElementById('address').innerText = address;
+        // 住所をHTMLページに表示
+      } else {
+        window.alert('No results found or Geocoder failed due to: ' + status);
+      }
+    });
+  }
+
+  function showError(error) {
+    switch(error.code) {
+      case error.PERMISSION_DENIED:
+        console.log("User denied the request for Geolocation.");
+        break;
+      case error.POSITION_UNAVAILABLE:
+        console.log("Location information is unavailable.");
+        break;
+      case error.TIMEOUT:
+        console.log("The request to get user location timed out.");
+        break;
+      case error.UNKNOWN_ERROR:
+        console.log("An unknown error occurred.");
+        break;
+    }
+  }
+</script>
+
+<div id="address">
+    <h2></h2>
+</div>
