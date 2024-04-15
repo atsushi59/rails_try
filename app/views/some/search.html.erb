@@ -1,11 +1,24 @@
-
 <% if @error_message %>
   <p>エラー: <%= @error_message %></p>
 <% else %>
-  <% if @answer %>
+  <% if @place_details %>
     <div>
-      <p>検索結果:</p>
-      <%= @answer %>
+      <h2>検索結果:</h2>
+      <div>
+        <h3><%= @place_details['name'] %></h3>
+        <p><%= @place_details['formatted_address'] %></p>
+        <% if @today_opening_hours %>
+          <p>本日の営業時間: <%= @today_opening_hours %></p>
+        <% else %>
+          <p>営業時間の情報はありません。</p>
+        <% end %>
+        <% if @place_details['website'] %>
+          <p>Website: <%= link_to @place_details['website'], @place_details['website'] %></p>
+        <% end %>
+        <% if @photo_url %>
+          <img src="<%= @photo_url %>" alt="<%= @place_details['name'] %>の写真">
+        <% end %>
+      </div>
     </div>
   <% else %>
     <p>結果が見つかりませんでした。</p>
