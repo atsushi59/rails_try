@@ -64,6 +64,14 @@ class SomeController < ApplicationController
         # 営業時間と写真のURLを取得
         opening_hours = place_detail['opening_hours'] ? place_detail['opening_hours']['weekday_text'][Time.zone.today.wday.zero? ? 6 : Time.zone.today.wday - 1] : "営業時間の情報はありません。"
         photo_reference = place_detail['photos'] ? @google_places_service.get_photo(place_detail['photos'].first['photo_reference']) : nil
+
+        Place.create(
+        name: place_detail['name'],
+        address: place_detail['formatted_address'],
+        website: place_detail['website'],
+        opening_hours: opening_hours,
+        photo_url: photo_reference
+      )
   
         # 取得した詳細情報を配列に追加
         @places_details.push(place_detail.merge("today_opening_hours" => opening_hours, "photo_url" => photo_reference))
