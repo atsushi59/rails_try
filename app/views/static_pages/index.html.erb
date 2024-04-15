@@ -1,36 +1,5 @@
 <h1 class="text-3xl font-bold underline">Hello world!</h1>
 
-<div>
-  <%= form_with url: root_path, method: :get, local: true do |form| %>
-    <%= form.text_field :query %>
-    <%= form.submit "検索" %>
-  <% end %>
-</div>
-
-<div>
-  <% if @place_details %>
-    <h1><%= @place_details['name'] %></h1>
-    <p><%= @place_details['formatted_address'] %></p>
-
-    <% if @today_opening_hours %>
-      <p>本日の営業時間:</p>
-      <p><%= @today_opening_hours %></p>
-    <% else %>
-      <p>営業時間の情報はありません。</p>
-    <% end %>
-
-    <% if @place_details['website'] %>
-      <p>Website: <%= link_to @place_details['website'], @place_details['website'] %></p>
-    <% end %>
-
-    <% if @photo_url %>
-      <img src="<%= @photo_url %>" alt="Place photo">
-    <% end %>
-  <% else %>
-    <p>場所の情報は見つかりませんでした。</p>
-  <% end %>
-</div>
-
 <%= form_with url: search_path, method: :post, id: 'location_form' do |form| %>
     <div>
         <%= form.label :selected_transport, '交通手段' %>
@@ -40,8 +9,8 @@
     <div>
         <%= form.label :selected_time, '所要時間' %>
         <%= form.select :selected_time, [['30分', '20分'], ['1時間', '45分'], ['1時間30分', '1時間'], ['2時間', '1時間30分']] %>
-        <%#　前に書かれているのがuserが選択する時間で後ろに書かれているのがcontrollerに渡す時間　%>
-        <%# userが30分を選択するとcontrollerへは20分を渡す　GPTの精度が低い為このような記載にした %>
+        <%# 前に書かれているのがユーザーが選択する時間で後ろに書かれているのがcontrollerに渡す時間 %>
+        <%# ユーザーが30分を選択するとcontrollerへは20分を渡す GPTの精度が低いためこのような記載にした %>
     </div>
 
     <div>
@@ -56,59 +25,63 @@
 
     <div>
         <%= form.hidden_field :address, id: 'hidden_address' %>
-        <%# 隠しフィールド 画面上では表示されないが検索ボタンを押したタイミングでhidden_addressを取得（現在地）%>
+        <%# 隠しフィールド 画面上では表示されないが検索ボタンを押したタイミングでhidden_addressを取得（現在地） %>
         <%= form.submit '検索' %>
     </div>
 <% end %>
 
+<dialog id="my_modal_2" class="modal">
+    <div class="modal-box">
+        <h3 class="font-bold text-lg">検索中です</h3>
+        <p class="py-4">しばらくお待ちください。</p>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+        <button type="button" onclick="document.getElementById('my_modal_2').close()">閉じる</button>
+    </form>
+</dialog>
 
 <script>
     function showPosition(position) {
         var lat = position.coords.latitude;
         var lng = position.coords.longitude;
-        //緯度経度の取得
 
-        var geocoder = new google.maps.Geocoder;
-        //Google Maps Geocoding APIを使用するためにインスタンス化
-        var latlng = {lat: parseFloat(lat), lng: parseFloat(lng)};
-        //緯度経度の値をオブジェクトに格納
+        var geocoder = new google.maps.Geocoder();
+        var latlng = { lat: parseFloat(lat), lng: parseFloat(lng) };
 
-        geocoder.geocode({'location': latlng}, function(results, status) {
-        //↑を呼び出して取得した緯度経度から住所を検索　latlng は、取得した緯度と経度を含むオブジェクト
+        geocoder.geocode({ 'location': latlng }, function(results, status) {
             if (status === 'OK' && results[0]) {
                 var fullAddress = results[0].formatted_address;
                 console.log(fullAddress);
-                //住所が存在した場合完全な住所情報を取得
 
                 var address = fullAddress.replace(/日本、〒\d{3}-\d{4} /, '');
                 console.log(address);
-                // 住所から国名と郵便番号を削除
 
-                
                 document.getElementById('hidden_address').value = address;
-                // 住所を隠しフィールドに設定
-                
                 document.getElementById('location_form').submit();
             } else {
                 window.alert('No results found or Geocoder failed due to: ' + status);
             }
-                // APIの呼び出しに失敗した場合alert
         });
     }
 
     document.getElementById('location_form').addEventListener('submit', function(event) {
-        //フォームが送信された時に実行される関数を追加
         if (!document.getElementById('hidden_address').value) {
-            event.preventDefault(); 
-            //hidden_address というIDを持つHTML要素の値をチェック
+            event.preventDefault();
             if ("geolocation" in navigator) {
-            // 位置情報が設定されていない場合はフォームの送信を防止
                 navigator.geolocation.getCurrentPosition(showPosition);
-            //Geolocation APIを使用して、ユーザーの現在の位置情報を取得し現在位置のデータが渡される
             } else {
                 console.log("ジオロケーションは利用できません");
-            //ブラウザがGeolocation APIをサポートしていない場合、コンソールにメッセージを出力
             }
         }
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var form = document.getElementById('location_form');
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+            var modal = document.getElementById('my_modal_2');
+            modal.showModal();
+            form.submit();
+        });
     });
 </script>

@@ -13,6 +13,8 @@ class SomeController < ApplicationController
     selected_activity = params[:selected_activity]
     address = params[:address]
     #フォームから送信されたパラメーターをuser_inputに代入
+
+    session[:selected_transport] = params[:selected_transport]
     
     user_input = "#{address}から#{selected_transport}で#{selected_time}以内で#{selected_age}歳の子供が#{selected_activity}できる場所を正式名称のみ10件提示してください"
     

@@ -2,10 +2,12 @@
   <p>エラー: <%= @error_message %></p>
 <% else %>
   <% if @places_details.any? %>
+    <%# 重複する名所の名前を削除する %>
+    <% unique_places = @places_details.uniq { |place| place['name'] } %>
     <div>
       <h2>検索結果:</h2>
       <% @places_details.each do |place_detail| %>
-        <% if place_detail['website'] %>
+        <% if place_detail['website'].present? || (place_detail['opening_hours'] && place_detail['opening_hours']['weekday_text'].present?) %>
           <div>
             <h3><%= place_detail['name'] %></h3>
             <p><%= place_detail['formatted_address'] %></p>
@@ -22,6 +24,9 @@
             <% if place_detail['photo_url'] %>
               <img src="<%= place_detail['photo_url'] %>" alt="<%= place_detail['name'] %>の写真">
             <% end %>
+            <!-- Google Maps Link with Button Style -->
+           <% travel_mode = session[:selected_transport] == '電車' ? 'transit' : 'driving' %>
+           <%= link_to 'ここに行く', "https://www.google.com/maps/dir/?api=1&origin=current+location&destination=#{ERB::Util.url_encode(place_detail['name'])}&travelmode=#{travel_mode}", target: "_blank", class: "btn btn-primary" %><br><br>
           </div>
         <% end %>
       <% end %>
