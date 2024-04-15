@@ -8,5 +8,6 @@ Rails.application.routes.draw do
   get '/styles.css', to: 'static#styles'
   post 'some_action', to: 'some#some_action'
   post 'search', to: 'some#search'
+  get 'index', to: 'some#index'
 
 end
