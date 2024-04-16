@@ -2,18 +2,23 @@
   <p>エラー: <%= @error_message %></p>
 <% else %>
   <% if @places_details.any? %>
-    <%# 重複する名所の名前を削除する %>
+    <%# @places_detailsが存在するか %>
     <% unique_places = @places_details.uniq { |place| place['name'] } %>
+    <%# 重複する名所の名前を削除する %>
     <div>
       <h2>検索結果:</h2>
       <% @places_details.each do |place_detail| %>
+      <%# places_detailsが存在するだけ回す %>
         <% if place_detail['website'].present? || (place_detail['opening_hours'] && place_detail['opening_hours']['weekday_text'].present?) %>
+        <%# webサイトか営業時間どちらとも情報がなければ全て非表示にする GPT-4から提示された内容に間違いがある場合は表示しないようにする為 %>
           <div>
             <h3><%= place_detail['name'] %></h3>
             <p><%= place_detail['formatted_address'] %></p>
 
             <% if place_detail['opening_hours'] && place_detail['opening_hours']['weekday_text'] %>
+            <%# place_detail ハッシュ内の opening_hours キーが存在し、さらにその中の weekday_text キーも存在するか確認 %>
               <p>本日の営業時間: <%= place_detail['opening_hours']['weekday_text'][Time.zone.today.wday.zero? ? 6 : Time.zone.today.wday - 1] %></p>
+              <%# google places apiだと日曜日スタートなのでTime.zone.today.wday - 1で月曜日スタートに変換 %>
               <p>土曜の営業時間: <%= place_detail['opening_hours']['weekday_text'][5] %></p>
               <p>日曜の営業時間: <%= place_detail['opening_hours']['weekday_text'][6] %></p>
             <% else %>
@@ -26,6 +31,7 @@
             <% end %>
             <!-- Google Maps Link with Button Style -->
            <% travel_mode = session[:selected_transport] == '電車' ? 'transit' : 'driving' %>
+           <%# session[:selected_transport]で選択(車,電車)された方のルート案内ページに画面遷移%>
            <%= link_to 'ここに行く', "https://www.google.com/maps/dir/?api=1&origin=current+location&destination=#{ERB::Util.url_encode(place_detail['name'])}&travelmode=#{travel_mode}", target: "_blank", class: "btn btn-primary" %><br><br>
           </div>
         <% end %>

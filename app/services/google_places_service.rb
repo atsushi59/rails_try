@@ -1,30 +1,33 @@
-require 'httparty'
+require 'httparty' #使用するgem
 
 class GooglePlacesService
   include HTTParty
   base_uri 'https://maps.googleapis.com/maps/api/place'
-
-  def initialize(api_key)
+	#APIエンドポイントの基本となるURI
+	
+  def initialize(api_key) # APIキーを受け取るコンストラクタ
     @api_key = api_key
   end
 
-  def search_places(query)
+  def search_places(query) # 場所を検索するためのメソッド
     options = {
-      query: {
+		  query: {   #queryメソッドで検索された値が入る（例 東京タワー）
         input: query,
-        inputtype: 'textquery',
-        fields: 'place_id,name,formatted_address,business_status',
-        key: @api_key,
-        language: 'ja'
+        inputtype: 'textquery', #検索の種類
+        fields: 'place_id,name,formatted_address,business_status', #APIから取得する情報のフィールドを指定
+        key: @api_key, #APIキーを指定
+        language: 'ja' #言語
       }
     }
     self.class.get('/findplacefromtext/json', options)
+    #HTTParty gemを使用してGoogle Places APIにGETリクエストを送信するためのコード
   end
 
-  def get_place_details(place_id, fields = 'name,formatted_address,opening_hours,website,photo')
+  def get_place_details(place_id, fields = 'name,formatted_address,opening_hours,website,photo') #表示したい項目をパラメーターに記載
+  #search_places(query)で取得したデーターをどう表示するか書く
     options = {
       query: {
-        place_id: place_id,
+        place_id: place_id, #search_places(query)で取得したplace_idを渡している
         fields: fields,
         key: @api_key,
         language: 'ja' 
