@@ -25,14 +25,17 @@
               <p>営業時間の情報はありません。</p>
             <% end %>
 
-            <p>Website: <%= link_to place_detail['website'], place_detail['website'] %></p>
+            <p>所要時間: 約 <%= place_detail['travel_time'].gsub('mins','分')
+            .gsub(/(\d+)\s*hours?/, '\1時間')
+            .gsub(/(\d+)\s*mins/, '\1分') %></p>
+            <p>ホームページ: <%= link_to place_detail['website'], place_detail['website'] %></p>
             <% if place_detail['photo_url'] %>
               <img src="<%= place_detail['photo_url'] %>" alt="<%= place_detail['name'] %>の写真">
             <% end %>
             <!-- Google Maps Link with Button Style -->
            <% travel_mode = session[:selected_transport] == '電車' ? 'transit' : 'driving' %>
            <%# session[:selected_transport]で選択(車,電車)された方のルート案内ページに画面遷移%>
-           <%= link_to 'ここに行く', "https://www.google.com/maps/dir/?api=1&origin=current+location&destination=#{ERB::Util.url_encode(place_detail['name'])}&travelmode=#{travel_mode}", target: "_blank", class: "btn btn-primary" %><br><br>
+           <%= link_to 'ここに行く', "https://www.google.com/maps/dir/?api=1&origin=current+location&destination=#{ERB::Util.url_encode(place_detail['name'])}&travelmode=#{travel_mode}", target: "_blank", class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" %><br><br>
           </div>
         <% end %>
       <% end %>

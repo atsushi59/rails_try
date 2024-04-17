@@ -1,5 +1,6 @@
 class SomeController < ApplicationController
   before_action :set_google_places_service
+  before_action :set_directions_service
 
   def search
     api_key = ENV['OPENAI_API_KEY']
@@ -14,11 +15,14 @@ class SomeController < ApplicationController
     address = params[:address]
     #フォームから送信されたパラメーターをuser_inputに代入
 
+    session[:selected_transport] = selected_transport
+    session[:address] = address if address.present?
     session[:selected_transport] = params[:selected_transport]
     #selected_transportで選択された(車,電車)パラメータをサーバー側のセッションに保存
     #後にviews/indexで使用
     
-    user_input = "#{address}から#{selected_transport}で#{selected_time}以内で#{selected_age}歳の子供が#{selected_activity}できる場所を正式名称のみ10件提示してください"
+    user_input = "現在地#{address}から移動手段は#{selected_transport}で#{selected_time}以内で目的地に到着する場所のみ提示してください
+                  年齢は#{selected_age}歳の子供が対象で#{selected_activity}できる場所を正式名称のみ10件提示してください"
     
       messages=[
         { role: 'system', content: 'You are a helpful assistant.' },
@@ -72,7 +76,7 @@ class SomeController < ApplicationController
         #lace_id を用いて、@google_places_service の get_place_details メソッドを呼び出し、その場所の詳細情報を取得 結果は details_response に格納
         place_detail = details_response["result"]
         #details_response から "result" キーに関連する値を取得(名前、住所等)し、place_detail に格紀保存します。この値には場所の詳細データが含まれる
-  
+        
         # 営業時間と写真のURLを取得
         opening_hours = place_detail['opening_hours'] ? place_detail['opening_hours']['weekday_text'][Time.zone.today.wday.zero? ? 6 : Time.zone.today.wday - 1] : "営業時間の情報はありません。"
         #条件演算子を使用して、場所の営業時間を取得 opening_hours が存在する場合、現在の曜日に対応する営業時間のテキストを取得
@@ -84,12 +88,14 @@ class SomeController < ApplicationController
         name: place_detail['name'],
         address: place_detail['formatted_address'],
         website: place_detail['website'],
-        opening_hours: opening_hours,
-        photo_url: photo_reference
+        opening_hours: 'opening_hours',
+        photo_url: 'photo_reference'
       )
+
+      travel_time = calculate_travel_time(place_detail)
   
         # 取得した詳細情報を配列に追加
-        @places_details.push(place_detail.merge("today_opening_hours" => opening_hours, "photo_url" => photo_reference))
+        @places_details.push(place_detail.merge("today_opening_hours" => opening_hours, "photo_url" => photo_reference,  "travel_time" => travel_time))
         #"today_opening_hours" と "photo_url" という新しいキーに割り当てて、元の place_detail ハッシュにマージ
         #place_detailとtoday_opening_hours" と "photo_url"が検索結果として表示
       else
@@ -97,12 +103,46 @@ class SomeController < ApplicationController
       end
     end
   end
-  
+
+  def calculate_travel_time(place_detail)
+    origin = session[:address]
+    destination = place_detail['formatted_address']
+    travel_mode = determine_travel_mode(session[:selected_transport])
+    current_time = DateTime.now.to_i  # 現在のUNIXタイムスタンプを取得
+    response = @directions_service.get_directions(
+      origin, 
+      destination,
+      current_time,
+      travel_mode: travel_mode
+    )
+
+    if response.success? && response.parsed_response['routes'].any?
+      response.parsed_response['routes'].first['legs'].first['duration']['text']
+    else
+      "所要時間の情報は利用できません。"
+    end
+  end
+
+  def determine_travel_mode(transport_mode)
+    case transport_mode
+    when '車'
+      'driving'
+    when '電車'
+      'transit'
+    else
+      'driving'
+    end
+  end
   
   private
 
   def set_google_places_service
     api_key = ENV['GOOGLE_API_KEY'] #環境変数からGoogle Places APIキーを取得
     @google_places_service = GooglePlacesService.new(api_key) #GooglePlacesServiceクラスのインスタンスを作成し、APIキーを渡す
+  end
+
+  def set_directions_service
+    api_key = ENV['GOOGLE_API_KEY']
+    @directions_service = GoogleDirectionsService.new(api_key)
   end
 end
