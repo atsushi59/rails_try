@@ -21,8 +21,7 @@ class SomeController < ApplicationController
     #selected_transportで選択された(車,電車)パラメータをサーバー側のセッションに保存
     #後にviews/indexで使用
     
-    user_input = "現在地#{address}から移動手段は#{selected_transport}で#{selected_time}以内で目的地に到着する場所のみ提示してください
-                  年齢は#{selected_age}歳の子供が対象で#{selected_activity}できる場所を正式名称のみ10件提示してください"
+    user_input = "現在地#{address}から移動手段は#{selected_transport}で#{selected_time}以内で目的地に到着する場所のみ提示してください。年齢は#{selected_age}歳の子供が対象で#{selected_activity}できる場所を正式名称のみ10件提示してください"
     
       messages=[
         { role: 'system', content: 'You are a helpful assistant.' },
