@@ -1,6 +1,7 @@
 class SomeController < ApplicationController
   before_action :set_google_places_service
   before_action :set_directions_service
+  before_action :set_navitime_route_service
 
   def search
     api_key = ENV['OPENAI_API_KEY']
@@ -18,10 +19,11 @@ class SomeController < ApplicationController
     session[:selected_transport] = selected_transport
     session[:address] = address if address.present?
     session[:selected_transport] = params[:selected_transport]
+    session[:selected_time] = params[:selected_time]
     #selected_transportで選択された(車,電車)パラメータをサーバー側のセッションに保存
     #後にviews/indexで使用
     
-    user_input = "現在地#{address}から移動手段は#{selected_transport}で#{selected_time}以内で目的地に到着する場所のみ提示してください。年齢は#{selected_age}歳の子供が対象で#{selected_activity}できる場所を正式名称のみ10件提示してください"
+    user_input = "現在地#{address}から移動手段は#{selected_transport}で#{selected_time}以内で目的地に到着する場所のみ提示してください。#{selected_age}の子供が対象の#{selected_activity}できる場所を国内のみ正式名称で10件提示してください"
     
       messages=[
         { role: 'system', content: 'You are a helpful assistant.' },
@@ -62,6 +64,8 @@ class SomeController < ApplicationController
     @places_details = []
     #@places_detailsを初期化し、空の配列を割り当て 後に使う
   
+    selected_time = session[:selected_time].to_i
+
     # 各クエリに対して検索を行い、結果を配列に保存
     queries.each do |query|
       response = @google_places_service.search_places(query)
@@ -90,13 +94,16 @@ class SomeController < ApplicationController
         opening_hours: 'opening_hours',
         photo_url: 'photo_reference'
       )
-
-      travel_time = calculate_travel_time(place_detail)
+      
+      travel_time_minutes = calculate_travel_time(place_detail)
+      place_detail['travel_time_text'] = "#{travel_time_minutes}分" if travel_time_minutes
   
+      if travel_time_minutes && travel_time_minutes <= selected_time
         # 取得した詳細情報を配列に追加
-        @places_details.push(place_detail.merge("today_opening_hours" => opening_hours, "photo_url" => photo_reference,  "travel_time" => travel_time))
+        @places_details.push(place_detail.merge("today_opening_hours" => opening_hours, "photo_url" => photo_reference))
         #"today_opening_hours" と "photo_url" という新しいキーに割り当てて、元の place_detail ハッシュにマージ
         #place_detailとtoday_opening_hours" と "photo_url"が検索結果として表示
+      end
       else
         @places_details.push({ "name" => query, "error" => "No results found" })
       end
@@ -106,30 +113,35 @@ class SomeController < ApplicationController
   def calculate_travel_time(place_detail)
     origin = session[:address]
     destination = place_detail['formatted_address']
-    travel_mode = determine_travel_mode(session[:selected_transport])
-    current_time = DateTime.now.to_i  # 現在のUNIXタイムスタンプを取得
-    response = @directions_service.get_directions(
-      origin, 
-      destination,
-      current_time,
-      travel_mode: travel_mode
-    )
-
+    current_time = DateTime.now.to_i  
+    # セッションから選択された交通手段を取得し、それが「車」であるかどうかをチェック
+    if session[:selected_transport] == '車'
+      travel_mode = 'driving'
+      response = @directions_service.get_directions(
+        origin, 
+        destination,
+        current_time,
+        travel_mode: travel_mode  # 'driving'を明示的に設定
+      )
+    elsif session[:selected_transport] == '電車'
+      travel_mode = 'transit'
+      # NavitimeRouteServiceインスタンスを使用
+      response = @navitime_route_service.get_directions(
+        origin,
+        destination,
+        current_time,
+        travel_mode: travel_mode  # 'transit'を明示的に設定
+      )
+    else
+      return "選択された交通手段が車または電車ではないため、所要時間は取得できません。"
+    end
+  
+      # レスポンスから所要時間を取得
     if response.success? && response.parsed_response['routes'].any?
-      response.parsed_response['routes'].first['legs'].first['duration']['text']
+      travel_time_text = response.parsed_response['routes'].first['legs'].first['duration']['text']
+      convert_duration_to_minutes(travel_time_text)
     else
       "所要時間の情報は利用できません。"
-    end
-  end
-
-  def determine_travel_mode(transport_mode)
-    case transport_mode
-    when '車'
-      'driving'
-    when '電車'
-      'transit'
-    else
-      'driving'
     end
   end
   
@@ -143,5 +155,17 @@ class SomeController < ApplicationController
   def set_directions_service
     api_key = ENV['GOOGLE_API_KEY']
     @directions_service = GoogleDirectionsService.new(api_key)
+  end
+
+  def set_navitime_route_service
+    api_key = ENV['Rapid_API_KEY'] # 環境変数からNAVITIME APIキーを取得
+    @navitime_route_service = NavitimeRouteService.new(api_key) # NavitimeRouteServiceクラスのインスタンスを作成し、APIキーを渡す
+  end
+
+  def convert_duration_to_minutes(duration_text)
+    hours = duration_text.scan(/(\d+)\s*hour/).flatten.first.to_i
+    minutes = duration_text.scan(/(\d+)\s*min/).flatten.first.to_i
+    total_minutes = hours * 60 + minutes
+    total_minutes
   end
 end

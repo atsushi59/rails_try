@@ -25,9 +25,7 @@
               <p>営業時間の情報はありません。</p>
             <% end %>
 
-            <p>所要時間: 約 <%= place_detail['travel_time'].gsub('mins','分')
-            .gsub(/(\d+)\s*hours?/, '\1時間')
-            .gsub(/(\d+)\s*mins/, '\1分') %></p>
+            <p>所要時間: 約 <%= place_detail['travel_time_text'] %></p>
             <p>ホームページ: <%= link_to place_detail['website'], place_detail['website'] %></p>
             <% if place_detail['photo_url'] %>
               <img src="<%= place_detail['photo_url'] %>" alt="<%= place_detail['name'] %>の写真">
