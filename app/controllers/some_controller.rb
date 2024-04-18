@@ -23,7 +23,7 @@ class SomeController < ApplicationController
     #selected_transportで選択された(車,電車)パラメータをサーバー側のセッションに保存
     #後にviews/indexで使用
     
-    user_input = "現在地#{address}から移動手段は#{selected_transport}で#{selected_time}以内で目的地に到着する場所のみ提示してください。#{selected_age}の子供が対象の#{selected_activity}できる場所を国内のみ正式名称で10件提示してください"
+    user_input = "#{address}から#{selected_transport}で#{selected_time}以内で#{selected_age}の子供が対象の#{selected_activity}できる場所を正式名称で5件提示してください"
     
       messages=[
         { role: 'system', content: 'You are a helpful assistant.' },
@@ -86,14 +86,12 @@ class SomeController < ApplicationController
         photo_reference = place_detail['photos'] ? @google_places_service.get_photo(place_detail['photos'].first['photo_reference']) : nil
         #photos キーが存在する場合、最初の写真の photo_reference を使って、その写真を取得するためのリンクまたはデータを @google_places_service の get_photo メソッドを通じて取得し、photo_reference に格納
 
-        #placesテーブルに検索結果を保存
-        Place.create(
-        name: place_detail['name'],
-        address: place_detail['formatted_address'],
-        website: place_detail['website'],
-        opening_hours: 'opening_hours',
-        photo_url: 'photo_reference'
-      )
+      #placesテーブルに検索結果を保存
+      place = Place.find_or_create_by(name: place_detail['name'], address: place_detail['formatted_address']) do |new_place|
+        new_place.website = place_detail['website']
+        new_place.opening_hours = opening_hours
+        new_place.photo_url = photo_reference
+      end
       
       travel_time_minutes = calculate_travel_time(place_detail)
       place_detail['travel_time_text'] = "#{travel_time_minutes}分" if travel_time_minutes
@@ -103,12 +101,14 @@ class SomeController < ApplicationController
         @places_details.push(place_detail.merge("today_opening_hours" => opening_hours, "photo_url" => photo_reference))
         #"today_opening_hours" と "photo_url" という新しいキーに割り当てて、元の place_detail ハッシュにマージ
         #place_detailとtoday_opening_hours" と "photo_url"が検索結果として表示
-      end
       else
         @places_details.push({ "name" => query, "error" => "No results found" })
       end
+    else
+      @places_details.push({ "name" => query, "error" => "No results found" })
     end
   end
+end
 
   def calculate_travel_time(place_detail)
     origin = session[:address]
