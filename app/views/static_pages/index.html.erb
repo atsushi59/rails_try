@@ -3,7 +3,7 @@
 <%= form_with url: search_path, method: :post, id: 'location_form' do |form| %>
     <div>
         <%= form.label :selected_transport, '交通手段' %>
-        <%= form.select :selected_transport, [['車', '車'], ['公共交通機関', '電車']] %>
+        <%= form.select :selected_transport, [['車', '車'], ['公共交通機関', '公共交通機関']] %>
     </div>
 
     <div>

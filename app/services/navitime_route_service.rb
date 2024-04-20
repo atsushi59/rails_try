@@ -14,15 +14,26 @@ class NavitimeRouteService
     }
   end
 
-  def get_directions(origin, destination, departure_time, travel_mode: 'transit')
+  # get_directionsメソッドは指定されたパラメータを受け取りAPIリクエストを実行します
+  def get_directions(origin, destination,start_time)
+
+    formatted_time = format_departure_time(start_time)
+
     query_options = {
       query: {
-        origin: origin,
-        destination: destination,
-        mode: travel_mode,
-        departure_time: departure_time
+        start: origin,
+        goal: destination,  # 公式ドキュメントに合わせてパラメータ名を 'destination' から 'goal' に変更
+        start_time: formatted_time,  # 'departure_time' を 'start_time' に変更
+        mode: 'transit'  # 'transit'をデフォルトとして指定
       }
     }
-    self.class.get('/your-endpoint', @options.merge(query_options))
+    self.class.get('/route_transit', @options.merge(query_options))
+  end
+
+
+  private
+
+  def format_departure_time(start_time)
+    Time.parse(start_time).strftime('%Y-%m-%dT%H:%M:%S')
   end
 end

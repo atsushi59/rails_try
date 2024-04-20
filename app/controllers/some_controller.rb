@@ -112,30 +112,25 @@ end
 
   def calculate_travel_time(place_detail)
     origin = session[:address]
+  
     destination = place_detail['formatted_address']
-    current_time = DateTime.now.to_i  
     # セッションから選択された交通手段を取得し、それが「車」であるかどうかをチェック
     if session[:selected_transport] == '車'
       travel_mode = 'driving'
       response = @directions_service.get_directions(
         origin, 
         destination,
-        current_time,
-        travel_mode: travel_mode  # 'driving'を明示的に設定
+        DateTime.now.to_i
       )
-    elsif session[:selected_transport] == '電車'
+    elsif session[:selected_transport] == '公共交通機関'
       travel_mode = 'transit'
-      # NavitimeRouteServiceインスタンスを使用
       response = @navitime_route_service.get_directions(
         origin,
         destination,
-        current_time,
-        travel_mode: travel_mode  # 'transit'を明示的に設定
+        start_time = (Time.now.utc + 9.hours).strftime('%Y-%m-%dT%H:%M:%S')
       )
-    else
-      return "選択された交通手段が車または電車ではないため、所要時間は取得できません。"
     end
-  
+    binding.pry
       # レスポンスから所要時間を取得
     if response.success? && response.parsed_response['routes'].any?
       travel_time_text = response.parsed_response['routes'].first['legs'].first['duration']['text']
@@ -168,4 +163,5 @@ end
     total_minutes = hours * 60 + minutes
     total_minutes
   end
+  
 end
