@@ -31,7 +31,7 @@
               <img src="<%= place_detail['photo_url'] %>" alt="<%= place_detail['name'] %>の写真">
             <% end %>
             <!-- Google Maps Link with Button Style -->
-           <% travel_mode = session[:selected_transport] == '電車' ? 'transit' : 'driving' %>
+           <% travel_mode = session[:selected_transport] == '公共交通機関' ? 'transit' : 'driving' %>
            <%# session[:selected_transport]で選択(車,電車)された方のルート案内ページに画面遷移%>
            <%= link_to 'ここに行く', "https://www.google.com/maps/dir/?api=1&origin=current+location&destination=#{ERB::Util.url_encode(place_detail['name'])}&travelmode=#{travel_mode}", target: "_blank" %><br><br>
           </div>

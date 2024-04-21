@@ -18,12 +18,11 @@ class SomeController < ApplicationController
 
     session[:selected_transport] = selected_transport
     session[:address] = address if address.present?
-    session[:selected_transport] = params[:selected_transport]
     session[:selected_time] = params[:selected_time]
     #selected_transportで選択された(車,電車)パラメータをサーバー側のセッションに保存
     #後にviews/indexで使用
     
-    user_input = "#{address}から#{selected_transport}で#{selected_time}以内で#{selected_age}の子供が対象の#{selected_activity}できる場所を正式名称で5件提示してください"
+    user_input = "#{address}から#{selected_transport}で#{selected_time}以内で#{selected_age}の子供が対象の#{selected_activity}できる場所を正式名称で3件提示してください"
     
       messages=[
         { role: 'system', content: 'You are a helpful assistant.' },
@@ -112,7 +111,6 @@ end
 
   def calculate_travel_time(place_detail)
     origin = session[:address]
-  
     destination = place_detail['formatted_address']
     # セッションから選択された交通手段を取得し、それが「車」であるかどうかをチェック
     if session[:selected_transport] == '車'
@@ -122,23 +120,30 @@ end
         destination,
         DateTime.now.to_i
       )
+      if response.success? && response.parsed_response['routes'].any?
+        travel_time_text = response.parsed_response['routes'].first['legs'].first['duration']['text']
+        travel_time_text = convert_duration_to_minutes(travel_time_text)
+      else
+        travel_time_text = "所要時間の情報は利用できません。"
+      end
     elsif session[:selected_transport] == '公共交通機関'
       travel_mode = 'transit'
+      formatted_origin = @navitime_route_service.geocode_address(origin)
+      formatted_destination = @navitime_route_service.geocode_address(destination)
+
       response = @navitime_route_service.get_directions(
-        origin,
-        destination,
+        formatted_origin,
+        formatted_destination,
         start_time = (Time.now.utc + 9.hours).strftime('%Y-%m-%dT%H:%M:%S')
       )
-    end
-    binding.pry
       # レスポンスから所要時間を取得
-    if response.success? && response.parsed_response['routes'].any?
-      travel_time_text = response.parsed_response['routes'].first['legs'].first['duration']['text']
-      convert_duration_to_minutes(travel_time_text)
+      if response.success? && response.parsed_response['items'].any?
+        travel_time_text = response["items"].first["summary"]["move"]["time"]
     else
-      "所要時間の情報は利用できません。"
+      travel_time_text = "所要時間の情報は利用できません。"
     end
   end
+end
   
   private
 

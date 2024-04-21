@@ -43,6 +43,7 @@
     function showPosition(position) {
         var lat = position.coords.latitude;
         var lng = position.coords.longitude;
+        console.log("Latitude: " + lat + ", Longitude: " + lng); 
 
         var geocoder = new google.maps.Geocoder();
         var latlng = { lat: parseFloat(lat), lng: parseFloat(lng) };
@@ -62,6 +63,7 @@
             }
         });
     }
+
 
     document.getElementById('location_form').addEventListener('submit', function(event) {
         if (!document.getElementById('hidden_address').value) {
