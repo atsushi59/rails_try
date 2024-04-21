@@ -8,12 +8,12 @@ class GoogleDirectionsService
     @api_key = api_key
   end
 
-  def get_directions(origin, destination, departure_time, travel_mode: 'driving')
+  def get_directions(origin, destination, departure_time)
     options = {
       query: {
         origin: origin,
         destination: destination,
-        mode: travel_mode,
+        mode: 'driving',
         departure_time: departure_time,
         key: @api_key
       }
