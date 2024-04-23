@@ -22,6 +22,8 @@ class SomeController < ApplicationController
     #addressで選択された(住所)パラメータをサーバー側のセッションに保存　indexで使用
     session[:selected_time] = params[:selected_time]
     #selected_timeで選択された(時間)パラメータをサーバー側のセッションに保存　indexで使用
+    session[:selected_activity] = params[:selected_activity]
+    #placeテーブルに保存するためにサーバー側のセッションに保存
     
     user_input = "#{address}から#{selected_transport}で#{selected_time}以内で#{selected_age}の子供が対象の#{selected_activity}できる場所を正式名称で2件提示してください"
     
@@ -91,6 +93,7 @@ class SomeController < ApplicationController
         new_place.website = place_detail['website']
         new_place.opening_hours = opening_hours
         new_place.photo_url = photo_reference
+        new_place.selected_activity = session[:selected_activity]
       end
       
       travel_time_minutes = calculate_travel_time(place_detail)

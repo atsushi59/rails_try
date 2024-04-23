@@ -57,3 +57,10 @@
 <div id="address">
     <h2></h2>
 </div>
+
+<h1>過去の検索結果</h1>
+<ul>
+  <% @places.each do |place| %>
+    <li><%= place.name %> - <%= place.address %></li>
+  <% end %>
+</ul>

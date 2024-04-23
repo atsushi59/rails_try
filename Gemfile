@@ -9,7 +9,7 @@ gem 'bcrypt'
 gem 'sass-rails'
 gem 'dotenv-rails'
 gem 'httparty'
-gem 'geocoder'
+gem 'geocoder' #なくて大丈夫
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem "sprockets-rails"
 
