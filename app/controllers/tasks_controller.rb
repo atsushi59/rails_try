@@ -1,5 +1,5 @@
 class TasksController < ApplicationController
     def index
-        @tasks = Task.all
+        @places = Place.all
     end
 end
