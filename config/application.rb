@@ -25,5 +25,21 @@ module MyApp
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
+    # Disable generation of system tests files.
+    config.generators.system_tests = nil
+
+    # Customize generators
+    config.generators do |g|
+      g.skip_routes true      # Skip routes.rb file update
+      g.helper false          # Don't create helper files
+      g.test_framework :rspec,  # Set RSpec as test framework
+        controller_specs: true,  # Enable controller specs
+        fixtures: false,         # Disable fixtures
+        helper_specs: false,     # Disable helper specs
+        model_specs: true,       # Enable model specs
+        request_specs: false,    # Disable request specs
+        routing_specs: false,    # Disable routing specs
+        view_specs: false        # Disable view specs
+    end
   end
 end
