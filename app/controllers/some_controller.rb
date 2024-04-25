@@ -22,17 +22,21 @@ class SomeController < ApplicationController
 
   def index
     queries = session[:query].to_s.split("\n").map { |q| q.split('. ').last.strip }
+    # セッションからクエリリストを取得して配列に変換
+    # queryキーに関連付けられた値を取得, \n）で分割し、個々の行を要素とする配列を作成
     process_queries(queries)
   end
 
   def calculate_travel_time(place_detail)
     origin = session[:address]
+    # ユーザーがフォームで送信した住所
     destination = place_detail['formatted_address']
+    # ユーザーがフォームで送信した住所
     transport_mode = session[:selected_transport]
-
+    # ユーザーがフォームで入力した交通手段
     travel_time_minutes = calculate_time_based_on_mode(origin, destination, transport_mode)
-
     place_detail['travel_time_text'] = travel_time_minutes
+    #viewで['travel_time_text']を使うため
   end
 
   def calculate_time_based_on_mode(origin, destination, transport_mode)
