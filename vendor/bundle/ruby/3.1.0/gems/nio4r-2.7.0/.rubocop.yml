@@ -59,6 +59,16 @@ Metrics/CyclomaticComplexity:
 Metrics/PerceivedComplexity:
   Max: 15
 
+# db/schema.rb は除外
+Metrics/BlockLength:
+  Exclude:
+    - 'db/schema.rb'
+
+# development.rb は除外
+Metrics/ClassLength:
+  Exclude:
+    - 'config/environments/development.rb'
+
 #
 # Style
 #

@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# This migration creates the `places` table to store information about various locations.
 class CreatePlaces < ActiveRecord::Migration[7.1]
   def change
     create_table :places do |t|

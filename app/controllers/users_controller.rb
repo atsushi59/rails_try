@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# New user registration action
 class UsersController < ApplicationController
   def new
     @user = User.new
@@ -11,12 +14,12 @@ class UsersController < ApplicationController
     else
       flash.now[:danger] = 'ユーザーの登録に失敗しました'
       rendew :new, status: :unprocessable_entity
-    end  
+    end
   end
 
   private
 
   def user_params
-    params.require(:user).permit(:user_name,:email, :password, :password_digest, :name, :avatar)
-  end  
+    params.require(:user).permit(:user_name, :email, :password, :password_digest, :name, :avatar)
+  end
 end
