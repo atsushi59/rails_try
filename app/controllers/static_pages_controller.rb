@@ -1,10 +1,10 @@
-class StaticPagesController < ApplicationController
-    def index
-    end
+# frozen_string_literal: true
 
-    def privacy_policy
-    end
-  
-    def terms_of_service
-    end
-end    
+# Display of TOP page
+class StaticPagesController < ApplicationController
+  def index; end
+
+  def privacy_policy; end
+
+  def terms_of_service; end
+end

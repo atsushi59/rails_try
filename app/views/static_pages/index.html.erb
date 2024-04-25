@@ -1,5 +1,3 @@
-<h1 class="text-3xl font-bold underline">Hello world!</h1>
-
 <%= form_with url: search_path, method: :post, id: 'location_form' do |form| %>
     <div>
         <%= form.label :selected_transport, '交通手段' %>
@@ -18,8 +16,8 @@
     </div>
 
     <div>
-        <%= form.label :selected_activity, '活動タイプ' %>
-        <%= form.select :selected_activity, [['外遊び場', '外遊び場'], ['室内遊び場', '室内遊び場'], ['レジャー施設', 'レジャー施設']] %>
+        <%= form.label :selected_activity, '遊戯施設' %>
+        <%= form.select :selected_activity, [['公園', '公園'], ['室内遊び場', '室内遊び場'], ['レジャー施設', 'レジャー施設']] %>
     </div>
 
     <div>
