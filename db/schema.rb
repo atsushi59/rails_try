@@ -14,34 +14,34 @@
 
 ActiveRecord::Schema[7.1].define(version: 20_240_423_150_237) do
   # These are extensions that must be enabled in order to support this database
-  enable_extension 'plpgsql'
+  enable_extension "plpgsql"
 
-  create_table 'places', force: :cascade do |t|
-    t.string 'name'
-    t.string 'address'
-    t.string 'website'
-    t.string 'opening_hours'
-    t.datetime 'created_at', null: false
-    t.datetime 'updated_at', null: false
-    t.string 'photo_url'
-    t.string 'selected_activity'
+  create_table "places", force: :cascade do |t|
+    t.string "name"
+    t.string "address"
+    t.string "website"
+    t.string "opening_hours"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "photo_url"
+    t.string "selected_activity"
   end
 
-  create_table 'tasks', force: :cascade do |t|
-    t.string 'title'
-    t.string 'content'
-    t.boolean 'is_done'
-    t.datetime 'created_at', null: false
-    t.datetime 'updated_at', null: false
+  create_table "tasks", force: :cascade do |t|
+    t.string "title"
+    t.string "content"
+    t.boolean "is_done"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
-  create_table 'users', force: :cascade do |t|
-    t.string 'user_name', null: false
-    t.string 'email', null: false
-    t.string 'name'
-    t.binary 'avatar'
-    t.string 'password_digest'
-    t.datetime 'created_at', null: false
-    t.datetime 'updated_at', null: false
+  create_table "users", force: :cascade do |t|
+    t.string "user_name", null: false
+    t.string "email", null: false
+    t.string "name"
+    t.binary "avatar"
+    t.string "password_digest"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 end

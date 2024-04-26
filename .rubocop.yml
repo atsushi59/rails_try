@@ -6,7 +6,7 @@ Layout/HashAlignment:
   Enabled: false
 
 Layout/LineLength:
-  Max: 128
+  Max: 135
 
 Layout/SpaceAroundMethodCallOperator:
   Enabled: false
@@ -43,11 +43,15 @@ Metrics/AbcSize:
   Max: 35
 
 Metrics/BlockLength:
-  Max: 128
   Enabled: false
+  Exclude:
+    - 'db/schema.rb'
+    - 'config/**/*.rb'
+    - 'spec/**/**'
+  Max: 100 
 
 Metrics/ClassLength:
-  Max: 128
+  Max: 135
 
 Metrics/MethodLength:
   CountComments: false
@@ -58,16 +62,6 @@ Metrics/CyclomaticComplexity:
 
 Metrics/PerceivedComplexity:
   Max: 15
-
-# db/schema.rb は除外
-Metrics/BlockLength:
-  Exclude:
-    - 'db/schema.rb'
-
-# development.rb は除外
-Metrics/ClassLength:
-  Exclude:
-    - 'config/environments/development.rb'
 
 #
 # Style

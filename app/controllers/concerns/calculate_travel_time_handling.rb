@@ -8,10 +8,11 @@ module CalculateTravelTimeHandling
 
   def calculate_travel_time_by_car(origin, destination)
     response = @directions_service.get_directions(origin, destination, Time.now.to_i)
-    #@directions_service.get_directionsアクションでルート検索
-    return '所要時間の情報は利用できません。' unless response.success? && response.parsed_response['routes'].any?
-    duration_text = response.parsed_response['routes'].first['legs'].first['duration']['text']
-    #response.parsed_response['routes']で取得した一番最初の['legs']の中の['duration']['text']を取得(ルートの時間)
+    # @directions_service.get_directionsアクションでルート検索
+    return "所要時間の情報は利用できません。" unless response.success? && response.parsed_response["routes"].any?
+
+    duration_text = response.parsed_response["routes"].first["legs"].first["duration"]["text"]
+    # response.parsed_response['routes']で取得した一番最初の['legs']の中の['duration']['text']を取得(ルートの時間)
     convert_duration_to_minutes(duration_text)
     # convert_duration_to_minutesを使用しルートの時間を1 hours 30 minsから90に変更(privateに定義)(比較する際に90という形に合わせる為)
   end
@@ -20,7 +21,7 @@ module CalculateTravelTimeHandling
     formatted_origin = @navitime_route_service.geocode_address(origin)
     # 指定された住所を@navitime_route_service.geocode_addressを用いて緯度経度に変換
     formatted_destination = @navitime_route_service.geocode_address(destination)
-    time_now_adjusted = (Time.now.utc + 9.hours).strftime('%Y-%m-%dT%H:%M:%S')
+    time_now_adjusted = (Time.now.utc + 9.hours).strftime("%Y-%m-%dT%H:%M:%S")
     # 現在のUTC時間から9時間加えて日本の標準時に調整
     response = @navitime_route_service.get_directions(formatted_origin, formatted_destination, time_now_adjusted)
     # @navitime_route_serviceで定義したget_directionsを使用しstartからgoalまでを現在の時間からルート検索する
@@ -38,9 +39,9 @@ module CalculateTravelTimeHandling
   end
 
   def extract_time_from_response(response)
-    return '所要時間の情報は利用できません。' unless response.success? && response.parsed_response['items'].any?
+    return "所要時間の情報は利用できません。" unless response.success? && response.parsed_response["items"].any?
 
-    response['items'].first['summary']['move']['time']
+    response.parsed_response["items"].first["summary"]["move"]["time"]
     # response.parsed_response['items']で取得した一番最初の['summary']['move']['time']を取得(ルートの時間)
   end
 end
