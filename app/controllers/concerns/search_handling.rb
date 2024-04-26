@@ -19,15 +19,15 @@ module SearchHandling
     base = "#{params[:address]}から#{params[:selected_transport]}で"
     condition = "#{params[:selected_time]}以内で#{params[:selected_age]}"
     activity = "の子供が対象の#{params[:selected_activity]}"
-    request = 'できる場所を正式名称で2件提示してください'
+    request = "できる場所を正式名称で2件提示してください"
     [base, condition, activity, request].join
   end
 
   def generate_messages(user_input)
     [
-      { role: 'system', content: 'You are a helpful assistant.' },
+      { role: "system", content: "You are a helpful assistant." },
       # roleはsystemであり、ChatGPTの動作モードや役割に関する指示を提供
-      { role: 'user', content: user_input }
+      { role: "user", content: user_input }
       # roleはsystemであり、ChatGPTの動作モードや役割に関する指示を提供
     ]
   end
@@ -46,7 +46,7 @@ module SearchHandling
   def process_successful_response(response)
     @result = response.parsed_response
     # response.parsed_response: 応答の内容を解析し、@result変数に格納
-    message_content = @result['choices'].first['message']['content']
+    message_content = @result["choices"].first["message"]["content"]
     # 最初の選択肢(choices)のメッセージ内容を取得してmessage_contentに代入します。これは、ChatGPTが生成したテキスト内容
     places = message_content.split("\n").select { |line| line.match(/^\d+\./) }
     # 取得したメッセージ内容を改行文字(\n)で分割し、各行を配列の要素として扱います

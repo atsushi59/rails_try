@@ -5,9 +5,9 @@ class User < ApplicationRecord
   authenticates_with_sorcery!
 
   validates :user_name, presence: true, length: { maximum: 16 }
-  validates :email, presence: true, uniqueness: true, format: { with: /\A\S+@\S+\.\S+\z/, message: 'is not valid' }
+  validates :email, presence: true, uniqueness: true, format: { with: /\A\S+@\S+\.\S+\z/, message: "is not valid" }
   validates :name, presence: true, length: { maximum: 8 }, uniqueness: true
-  validates :avatar, format: { with: /\.(png|jpg|jpeg)\z/i, message: 'must be a valid image format' }
+  validates :avatar, format: { with: /\.(png|jpg|jpeg)\z/i, message: "must be a valid image format" }
   validates :password, length: { minimum: 8 }
   validates :password_confirmation, presence: true, on: :create
   validate :password_complexity
@@ -19,7 +19,7 @@ class User < ApplicationRecord
     return if password_meets_criteria?
 
     errors.add :password,
-               'must include at least one lowercase letter, one uppercase letter, one digit, and one special character'
+               "must include at least one lowercase letter, one uppercase letter, one digit, and one special character"
   end
 
   # パスワードが複雑性の基準を満たしているかどうかを判定
