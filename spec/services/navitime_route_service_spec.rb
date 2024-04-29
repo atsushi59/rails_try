@@ -3,14 +3,15 @@
 require "rails_helper"
 
 RSpec.describe NavitimeRouteService, type: :service do
-  let(:api_key) { "dummy_api_key" }
-  let(:google_api_key) { "dummy_google_api_key" }
-  let(:service) { described_class.new(api_key) }
-  let(:origin) { "東京駅" }
-  let(:destination) { "横浜駅" } # destination変数を追加
+  let(:api_key) { "test_api_key" } #テスト用のAPIキーを定義
+  let(:google_api_key) { "test_google_api_key" } #テスト用のAPIキーを定義
+  let(:service) { described_class.new(api_key) } #NavitimeRouteServiceの新しいインスタンス作成
+  let(:origin) { "東京駅" } #テスト用の始点
+  let(:destination) { "横浜駅" } #テスト用の終点
   let(:start_time) { "2023-04-01 12:00:00" } # start_time変数を追加
 
   before do
+    #テスト実行前の事前準 緯度経度を取得しテスト中に実際に外部APIにリクエストを送信せずに、モックされたレスポンスを返すように設定
     allow(ENV).to receive(:[]).with("GOOGLE_API_KEY").and_return(google_api_key)
     response = {
       "results" => [
