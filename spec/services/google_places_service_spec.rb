@@ -3,13 +3,13 @@
 require "rails_helper"
 
 RSpec.describe GooglePlacesService, type: :service do
-  let(:service) { described_class.new("dummy_api_key") }
-  let(:place_id) { "ChIJN1t_tDeuEmsRUsoyG83frY4" }
-  let(:photo_reference) { "CmRaAAAAE3q4oh5qp5uexK-0-T1sgbpJvMr9Kf8T" }
+  let(:service) { described_class.new("test_api_key") } #GooglePlacesServiceクラスの新しいインスタンスを作成 
+  let(:place_id) { "ChIJN1t_tDeuEmsRUsoyG83frY4" } #テスト中に使用する place_id 変数を定義
+  let(:photo_reference) { "CmRaAAAAE3q4oh5qp5uexK-0-T1sgbpJvMr9Kf8T" } #テスト中に使用する photo_reference 変数を定義
 
   describe "#search_places" do
     it "適切なエンドポイントに適切なクエリでリクエストを送信していることを確認する" do
-      query = { input: "東京タワー", key: "dummy_api_key" }
+      query = { input: "東京タワー", key: "test_api_key" }
       stub_request(:get, "https://maps.googleapis.com/maps/api/place/findplacefromtext/json")
         .with(query: hash_including(query))
         .to_return(status: 200, body: { status: "OK" }.to_json)
@@ -23,7 +23,7 @@ RSpec.describe GooglePlacesService, type: :service do
 
   describe "#get_place_details" do
     it "適切なエンドポイントに適切なクエリでリクエストを送信していることを確認する" do
-      query = { place_id: place_id, key: "dummy_api_key" }
+      query = { place_id: place_id, key: "test_api_key" }
       stub_request(:get, "https://maps.googleapis.com/maps/api/place/details/json")
         .with(query: hash_including(query))
         .to_return(status: 200, body: { result: {} }.to_json)
@@ -37,7 +37,7 @@ RSpec.describe GooglePlacesService, type: :service do
 
   describe "#get_photo" do
     it "正しい写真のURLへのリクエストを送信していることを確認する" do
-      photo_url = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=#{photo_reference}&key=dummy_api_key"
+      photo_url = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=#{photo_reference}&key=test_api_key"
       stub_request(:get, photo_url)
         .to_return(status: 200, body: "", headers: {})
 
