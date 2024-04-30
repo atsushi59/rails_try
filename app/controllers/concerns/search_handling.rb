@@ -9,10 +9,11 @@ module SearchHandling
 
   def setup_session
     params.each do |key, value|
-      session[key] = value if %w[selected_transport address selected_time
-                                 selected_activity].include?(key) && value.present?
-    end
+      if %w[selected_transport address selected_time selected_activity].include?(key) && value.present?
+        session[key] = value 
+      end
     # paramsに[selected_transport address selected_time selected_activity]の値があるか確認しあればセッションに保存
+    end
   end
 
   def generate_user_input

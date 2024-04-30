@@ -4,7 +4,9 @@ require "rails_helper"
 
 RSpec.describe SomeController, type: :controller do
   let(:chatgpt_service) { instance_double(ChatgptService) }
+  #ChatgptServiceクラスのインスタンスダブルを作成
   let(:successful_response) do
+    #モックされたChatgptServiceが返す予定のレスポンスを定義
     double("response", success?: true,
                        parsed_response: { "choices" => [{ "message" => { "content" => "1. 場所名\n2. 別の場所" } }] })
   end
